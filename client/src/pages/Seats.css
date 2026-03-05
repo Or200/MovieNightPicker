@@ -1,0 +1,30 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.seatsPage {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.sub{
+    display: flex;
+    justify-content: space-between;
+    width: 100vh;
+}
+
+.seatStyle{
+border: 0.5px solid black;
+height: 50px;
+width: 50px;
+}
+.seatStyle:hover{
+cursor: pointer;
+background-color: #b4b4b4;
+}
+

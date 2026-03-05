@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
 import "./Home.css";
 
 function Home() {
@@ -19,6 +20,7 @@ function Home() {
   useEffect(() => {
     const getData = async () => {
       const myData = await axios.get("http://localhost:3000/loaddata");
+      localStorage.setItem("videos", JSON.stringify(myData.data));
       setData(myData.data);
     };
     getData();
@@ -45,7 +47,7 @@ function Home() {
             <div key={e.imdbID} className="card-container">
               <div
                 style={{
-                  backgroundImage: `url(${e.Images[0]})`,
+                  backgroundImage: `url(${e.Images[2]})`,
                   backgroundPosition: "center",
                   backgroundSize: "cover",
                   height: "200px",
@@ -67,6 +69,12 @@ function Home() {
                 <span className="row">
                   <p>Language</p> <p>{e.Language}</p>{" "}
                 </span>
+              </div>
+              <div
+                className="button"
+                onClick={() => navigate(`/details/${e.imdbID}`)}
+              >
+                Select Seats
               </div>
             </div>
           );
