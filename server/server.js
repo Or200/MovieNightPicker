@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
-import * as fs from "fs";
-import csv from "csv-parser";
+import * as fs from "fs/promises";
 
 const app = express();
 const port = 3000;
@@ -13,55 +12,30 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.get("/loadcsv", async (req, res) => {
-  const results = [];
-
-  function readCSV(filepath) {
-    return new Promise((resolve, reject) => {
-      fs.createReadStream(filepath)
-        .pipe(csv())
-        .on("data", (data) => {
-          results.push(data);
-        })
-        .on("error", (error) => reject(results))
-        .on("end", () => {
-          resolve(results);
-        });
-    });
-  }
-
-  const csvFilePath = "data.csv";
-
-  (async () => {
-    const output = await readCSV(csvFilePath);
-    const slicedArray = output.slice(0, 50);
-    res.send(slicedArray);
-  })();
-});
-
-app.post("/saveplayerresult", async (req, res) => {
-  const { playerScore } = req.body;
-  if (!playerScore) {
-    return res.status(401).json({ error: "Unauthorized: Missing credentials" });
-  }
+app.get("/loaddata", async (req, res) => {
   try {
-    const createdAt = new Date();
-    const pScore = {
-      createdAt: createdAt,
-      playerScore: playerScore,
-    };
+    const data = await fs.readFile("data.json", "utf8");
+    const jsonData = JSON.parse(data)
+    res.status(200).json(jsonData)
+  } catch (err) {
+    console.error("Error reading file:", err);
+    res.status(500).json({"error": err})
 
-    let scoreJson = fs.readFileSync("scores.json", "utf-8");
-    let pScores = JSON.parse(scoreJson);
-    pScores.scores.push(pScore);
-    pScores = JSON.stringify(pScores);
-    fs.writeFileSync("scores.json", pScores, "utf-8");
-
-    res.status(200).json({ message: "Message added successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.get("/loadseats", async (req, res) => {
+  try {
+    const data = await fs.readFile("seats.json", "utf8");
+    const jsonData = JSON.parse(data)
+    res.status(200).json(jsonData)
+  } catch (err) {
+    console.error("Error reading file:", err);
+    res.status(500).json({"error": err})
+
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
